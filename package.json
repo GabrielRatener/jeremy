@@ -1,0 +1,27 @@
+{
+  "name": "jeremy",
+  "version": "1.0.0",
+  "description": "Use your JSON as it's loading",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GabrielRatener/jeremy.git"
+  },
+  "keywords": [
+    "json",
+    "parser",
+    "async"
+  ],
+  "author": "Gabriel Ratener",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GabrielRatener/jeremy/issues"
+  },
+  "homepage": "https://github.com/GabrielRatener/jeremy#readme",
+  "devDependencies": {
+    "tape": "^4.12.0"
+  }
+}
