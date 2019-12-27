@@ -91,11 +91,9 @@ tape("Lexing unicode strings", (t) => {
     });
 });
 
+
 tape("Composing basic object", (t) => {
     const json = '{"hello": 222, "bye": null}';
-
-    t.plan(2);
-
 
     const virtual = compose((add, done) => {
         setTimeout(() => {
@@ -107,11 +105,42 @@ tape("Composing basic object", (t) => {
         }, 0);    
     });
 
+    t.plan(2);
+
+
     return (async () => {
         const h = await virtual.get('hello').value();
         const b = await virtual.get('bye').value();
 
         t.equals(h, 222);
         t.equals(b, null);
+    })();
+});
+
+
+tape("Composing nested object", (t) => {
+    const json = '{"hello": 222, "bye": {"hye": null}}';
+
+    const virtual = compose((add, done) => {
+        setTimeout(() => {
+            for (const c of json) {
+                add(c);
+            }
+    
+            done();
+        }, 0);    
+    });
+
+    t.plan(3);
+
+
+    return (async () => {
+        const h = await virtual.get('hello').value();
+        const y = await virtual.get('bye').get('hye').value();
+        const b = await virtual.get('bye').value();
+
+        t.equals(h, 222);
+        t.equals(y, null);
+        t.equals(b.hye, null);
     })();
 });
