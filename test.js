@@ -144,3 +144,31 @@ tape("Composing nested object", (t) => {
         t.equals(b.hye, null);
     })();
 });
+
+tape("Composing object with array", (t) => {
+    const json = '{"hello": 222, "bye": [2, 5]}';
+
+    const virtual = compose((add, done) => {
+        setTimeout(() => {
+            for (const c of json) {
+                add(c);
+            }
+    
+            done();
+        }, 0);    
+    });
+
+    t.plan(4);
+
+    return (async () => {
+        const h = await virtual.get('hello').value();
+        const a = await virtual.get('bye').get(0).value();
+        const b = await virtual.get('bye').get(1).value();
+        const arr = await virtual.get('bye').value();
+
+        t.equals(h, 222);
+        t.equals(a, 2);
+        t.equals(b, 5);
+        t.equals(arr[0], 2);
+    })();
+});
