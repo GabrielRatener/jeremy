@@ -172,3 +172,57 @@ tape("Composing object with array", (t) => {
         t.equals(arr[0], 2);
     })();
 });
+
+tape("Composing nested object", (t) => {
+    const json = '{"hello": 222, "bye": {"hye": null}}';
+
+    const virtual = compose((add, done) => {
+        setTimeout(() => {
+            for (const c of json) {
+                add(c);
+            }
+    
+            done();
+        }, 0);    
+    });
+
+    t.plan(3);
+
+
+    return (async () => {
+        const h = await virtual.get('hello').value();
+        const y = await virtual.get('bye').get('hye').value();
+        const b = await virtual.get('bye').value();
+
+        t.equals(h, 222);
+        t.equals(y, null);
+        t.equals(b.hye, null);
+    })();
+});
+
+tape("Objects with strings values", (t) => {
+    const json = '{"hello": "222", "bye": [2, "nooo"]}';
+
+    const virtual = compose((add, done) => {
+        setTimeout(() => {
+            for (const c of json) {
+
+                add(c);
+            }
+    
+            done();
+        }, 0);    
+    });
+
+    t.plan(3);
+
+    return (async () => {
+        const h = await virtual.get('hello').value();
+        const a = await virtual.get('bye').get(0).value();
+        const b = await virtual.get('bye').get(1).value();
+
+        t.equals(h, "222");
+        t.equals(a, 2);
+        t.equals(b, "nooo");
+    })();
+});
