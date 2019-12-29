@@ -226,3 +226,103 @@ tape("Objects with strings values", (t) => {
         t.equals(b, "nooo");
     })();
 });
+
+tape("Array iteration", (t) => {
+    const json = '{"hello": "222", "bye": [2, 6, 77]}';
+
+    const virtual = compose((add, done) => {
+        setTimeout(() => {
+            for (const c of json) {
+
+                add(c);
+            }
+    
+            done();
+        }, 0);    
+    });
+
+    t.plan(8);
+
+    return (async () => {
+        const arr = [], arrToo = [];
+
+        for await (const val of virtual.get('bye').iterate()) {
+            arr.push(val);
+        }
+
+        t.equals(arr.length, 3);
+        t.equals(arr[0], 2);
+        t.equals(arr[1], 6);
+        t.equals(arr[2], 77);
+
+        for await(const val of virtual.get('bye').iterate()) {
+            arrToo.push(val);
+        }
+
+        t.equals(arrToo.length, 3);
+        t.equals(arrToo[0], 2);
+        t.equals(arrToo[1], 6);
+        t.equals(arrToo[2], 77);
+    })();
+});
+
+tape("Object iteration", (t) => {
+    const json = '{"hello": "222", "bye": {"a": 3, "b": 55, "c": 66}}';
+
+    const virtual = compose((add, done) => {
+        setTimeout(() => {
+            for (const c of json) {
+
+                add(c);
+            }
+    
+            done();
+        }, 0);    
+    });
+
+    t.plan(7);
+
+    return (async () => {
+        const arr = [];
+
+        for await (const val of virtual.get('bye').iterate()) {
+            arr.push(...val);
+        }
+
+        t.equals(arr.length, 6);
+        t.equals(arr[0], 'a');
+        t.equals(arr[1], 3);
+        t.equals(arr[2], 'b');
+        t.equals(arr[3], 55);
+        t.equals(arr[4], 'c');
+        t.equals(arr[5], 66);
+    })();
+});
+
+tape("String iteration", (t) => {
+    const json = '{"hello": "222", "bye": "goodbye"}';
+
+    const virtual = compose((add, done) => {
+        setTimeout(() => {
+            for (const c of json) {
+
+                add(c);
+            }
+    
+            done();
+        }, 0);
+    });
+
+    t.plan(2);
+
+    return (async () => {
+        const arr = [];
+
+        for await (const char of virtual.get('bye').iterate()) {
+            arr.push(char);
+        }
+
+        t.equals(arr.length, 7);
+        t.equals(arr.join(''), "goodbye");
+    })();
+});
