@@ -1,6 +1,7 @@
 
-import {Lexer, compose} from "./lib/index.js"
+import fs from "fs"
 import tape from "tape"
+import {Lexer, compose} from "./lib/index.js"
 
 tape("Vanilla lexing", (t) => {
     const lexer = new Lexer();
@@ -200,8 +201,8 @@ tape("Composing nested object", (t) => {
     })();
 });
 
-tape("Objects with strings values", (t) => {
-    const json = '{"hello": "222", "bye": [2, "nooo"]}';
+tape("Objects with string values", (t) => {
+    const json = '{"hello": "222", "bye": [2, "nooo"], "rye": "yoo"}';
 
     const virtual = compose((add, done) => {
         setTimeout(() => {
@@ -214,16 +215,21 @@ tape("Objects with strings values", (t) => {
         }, 0);    
     });
 
-    t.plan(3);
+    t.plan(5);
 
     return (async () => {
         const h = await virtual.get('hello').value();
         const a = await virtual.get('bye').get(0).value();
         const b = await virtual.get('bye').get(1).value();
+        const c = await virtual.get('rye').value();
+
+        const val = await virtual.value();
 
         t.equals(h, "222");
         t.equals(a, 2);
         t.equals(b, "nooo");
+        t.equals(c, 'yoo');
+        t.equals(val.rye, 'yoo');
     })();
 });
 
@@ -299,6 +305,7 @@ tape("Object iteration", (t) => {
     })();
 });
 
+
 tape("String iteration", (t) => {
     const json = '{"hello": "222", "bye": "goodbye"}';
 
@@ -324,5 +331,43 @@ tape("String iteration", (t) => {
 
         t.equals(arr.length, 7);
         t.equals(arr.join(''), "goodbye");
+    })();
+});
+
+tape("Advanced Object Iteration", (t) => {
+
+    const json = fs.readFileSync('json/data.json', 'utf8');
+
+    const virtual = compose((add, done) => {
+        // setTimeout(() => {
+            for (const c of json) {
+
+                add(c);
+            }
+    
+            done();
+        // }, 0);    
+    });
+
+    t.plan(3);
+
+    return (async () => {
+        const arr = [];
+
+        let i = 0;
+
+        for await (const val of virtual.get('Afghanistan').iterate()) {
+            arr.push(val);
+
+            i++;
+
+            if (i === 3) {
+                break;
+            }
+        }
+
+        t.equals(arr[0].date, '2020-1-22');
+        t.equals(arr[1].deaths, 0);
+        t.equals(arr[2].date, '2020-1-24');
     })();
 });

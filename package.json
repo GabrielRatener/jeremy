@@ -1,6 +1,6 @@
 {
-  "name": "jeremy",
-  "version": "1.0.1",
+  "name": "jeremy-json",
+  "version": "1.0.2",
   "description": "Use your JSON as it's loading",
   "main": "./lib/index.js",
   "exports": "./lib/index.js",
@@ -9,7 +9,7 @@
     "node": "13.x.x"
   },
   "scripts": {
-    "test": "node test.js"
+    "test": "node --unhandled-rejections=strict test.js"
   },
   "repository": {
     "type": "git",
