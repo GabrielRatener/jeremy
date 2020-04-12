@@ -1,5 +1,5 @@
 
-import {Lexer, compose} from "./lib/index"
+import {Lexer, compose} from "./lib/index.js"
 import tape from "tape"
 
 tape("Vanilla lexing", (t) => {
